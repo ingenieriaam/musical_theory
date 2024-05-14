@@ -3,22 +3,21 @@ from collections import namedtuple
 class Guitar():
     def __init__(self):
         self.diapason = {
-            'e': ['E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F' ,'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E' ],
-            'B': ['B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#','Cb', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ],
-            'G': ['G', 'Ab', 'A', 'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G' ,'Ab', 'A', 'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G' ],
-            'D': ['D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D' ,'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D' ],
-            'A': ['A', 'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A' ,'Bb', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A' ],
-            'E': ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E' ,'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E' ]
+            'e': ['E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E' ],
+            'B': ['B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E' ,'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B' ],
+            'G': ['G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G' ],
+            'D': ['D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E' ,'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D' ],
+            'A': ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A' ],
+            'E': ['E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E' ],
             }
         self.equivalente = {
-            'A#': 'Bb', 'Bb': 'A#',
-            'C#': 'Db', 'Db': 'C#',
-            'D#': 'Eb', 'Eb': 'D#',
-            'F#': 'Gb', 'Gb': 'F#',
-            'G#': 'Ab', 'Ab': 'G#',
-            'A#': 'Bb', 'Bb': 'A#'
+            'G#': 'Ab',
+            'A#': 'Bb',
+            'C#': 'Db',
+            'D#': 'Eb',
+            'F#': 'Gb'
         }
-        self.cromatica = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ]
+        self.cromatica = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B' ]
         self.symbol = {
             'red_circle' :'\u2B55',
             'white_circle' :'\u26AA',
@@ -44,7 +43,7 @@ class Guitar():
     ###############################################
     # Metodos    
     ###############################################
-    def encontrar_nota(self,nota, verbose = False):
+    def encontrar_nota(self,nota, verbose = False):        
         resultado = {}
         for cuerda, notas in self.diapason.items():
             nota = nota if nota not in self.equivalente else self.equivalente[nota]
@@ -64,7 +63,11 @@ class Guitar():
             diag_cuerda = list(self.mastil_res[cuerda])
 
             for idx in posiciones:
-                diag_cuerda[self.mastil_medio[idx-1]] = caracter
+                cuerda_idx = self.mastil_medio[idx-1]
+                if len(caracter) > 1:
+                    diag_cuerda[cuerda_idx],diag_cuerda[cuerda_idx+1] = caracter
+                else:
+                    diag_cuerda[cuerda_idx] = caracter
 
             self.mastil_res[cuerda] = ''.join(diag_cuerda)
             print(cuerda,self.mastil_res[cuerda]) if verbose else None
@@ -72,27 +75,26 @@ class Guitar():
 
         print('r',self.mastil_res['r']) if verbose else None
 
-    def graficar_escala(self, tonica, tipo, verbose = False):
-        """_summary_
-
-        Args:
-            tonica (str): _description_
-            tipo (guitar.formula.tipo): _description_
-            verbose (bool, optional): verbose. Defaults to False.
-        """
+    def graficar_escala(self, tonica, tipo,indicacion='intervalo', verbose = False):
         self.graficar_nota_terminal(tonica,caracter='T',verbose=verbose)
-        esc_tipo = self.formula.modo[tipo]
-        inte_gen = self.gen_prox_dato(self.intervalo.modo[tipo])
-        note_gen = self.gen_prox_nota(tonica)
+
+        esc_formula = self.formula.modo[tipo]
+        inte_gen    = self.gen_prox_dato(self.intervalo.modo[tipo])
+        note_gen    = self.gen_prox_nota(tonica)
+
         next(note_gen); next(inte_gen)
-        for form in esc_tipo:
-            nota = next(note_gen)
-            intervalo = next(inte_gen)
-            if form == 't': nota = next(note_gen)
-            print(nota,intervalo,form)
-            self.graficar_nota_terminal(nota,caracter=intervalo,verbose=verbose)
+        
+        for form in esc_formula:
+            nota = next(note_gen); intervalo = next(inte_gen)
+            if form == 't': 
+                nota = next(note_gen)
+            caracter = intervalo if indicacion == 'intervalo' else nota
+            self.graficar_nota_terminal(nota,caracter=caracter,verbose=verbose)
         for key in self.mastil_res.keys():
             print(self.mastil_res[key])
+
+    def mastil_res_clean(self):
+        self.mastil_res = self.mastil.copy()
 
     ###############################################
     # Generadores    
@@ -104,7 +106,7 @@ class Guitar():
             idx+=1; idx%=len(form)
     def gen_prox_nota(self,inicial='C'):
         nota = inicial if inicial not in self.equivalente else self.equivalente[inicial]
-        idx = self.cromatica.index(nota)
+        idx = self.cromatica.index(nota) 
         while True:
             yield self.cromatica[idx]
             idx+=1; idx%=len(self.cromatica)
