@@ -35,10 +35,15 @@ class Guitar():
             'E': 'I-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|',
             'r': '   1           3           5           7           9              I  12                15          17          19          21             I  24 '
         }
+        self.mastil_res = self.mastil.copy()
         self.mastil_medio = [3, 9, 15, 21, 27, 33, 39, 45, 51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141]
         
         self.formula = self.Formulas()
         self.intervalo = self.Intervalos()
+
+    ###############################################
+    # Metodos    
+    ###############################################
     def encontrar_nota(self,nota, verbose = False):
         resultado = {}
         for cuerda, notas in self.diapason.items():
@@ -51,21 +56,21 @@ class Guitar():
         return resultado
     
     def graficar_nota_terminal(self, nota, caracter = 'X',verbose = False):
-        mastil = self.mastil.copy()
         # cuerda: lista de espacios en el diapason
         # self.mastil_medio contiene el espacio a marcar en el diagrama
         resultado = self.encontrar_nota(nota, verbose)
 
         for cuerda, posiciones in resultado.items():
-            diag_cuerda = list(mastil[cuerda])
+            diag_cuerda = list(self.mastil_res[cuerda])
 
             for idx in posiciones:
                 diag_cuerda[self.mastil_medio[idx-1]] = caracter
 
-            mastil[cuerda] = ''.join(diag_cuerda)
-            print(cuerda,mastil[cuerda])
+            self.mastil_res[cuerda] = ''.join(diag_cuerda)
+            print(cuerda,self.mastil_res[cuerda]) if verbose else None
+            # retornar en lugar de imprimir
 
-        print('r',mastil['r'])
+        print('r',self.mastil_res['r']) if verbose else None
 
     def graficar_escala(self, tonica, tipo, verbose = False):
         """_summary_
@@ -76,24 +81,30 @@ class Guitar():
             verbose (bool, optional): verbose. Defaults to False.
         """
         self.graficar_nota_terminal(tonica,caracter='T',verbose=verbose)
+        esc_tipo = self.formula.modo[tipo]
         inte_gen = self.gen_prox_dato(self.intervalo.modo[tipo])
         note_gen = self.gen_prox_nota(tonica)
-        next(inte_gen); next(note_gen)
-        for form in tipo[1:]:
+        next(note_gen); next(inte_gen)
+        for form in esc_tipo:
             nota = next(note_gen)
             intervalo = next(inte_gen)
             if form == 't': nota = next(note_gen)
-            print(nota,intervalo)
+            print(nota,intervalo,form)
             self.graficar_nota_terminal(nota,caracter=intervalo,verbose=verbose)
+        for key in self.mastil_res.keys():
+            print(self.mastil_res[key])
 
+    ###############################################
+    # Generadores    
+    ###############################################
     def gen_prox_dato(self,form):
         idx = 0
         while True:
             yield form[idx]
             idx+=1; idx%=len(form)
     def gen_prox_nota(self,inicial='C'):
-        print(self.cromatica)
-        idx = self.cromatica.index(inicial)
+        nota = inicial if inicial not in self.equivalente else self.equivalente[inicial]
+        idx = self.cromatica.index(nota)
         while True:
             yield self.cromatica[idx]
             idx+=1; idx%=len(self.cromatica)
