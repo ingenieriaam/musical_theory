@@ -37,8 +37,9 @@ class Guitar():
         self.mastil_res = self.mastil.copy()
         self.mastil_medio = [3, 9, 15, 21, 27, 33, 39, 45, 51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141]
         
-        self.formula = self.Formulas()
-        self.intervalo = self.Intervalos()
+        self.formula    = self.Formulas()
+        self.intervalo  = self.Intervalos()
+        self.acorde     = self.Acordes()
 
     ###############################################
     # Metodos    
@@ -220,6 +221,36 @@ class Guitar():
                 'pentatonica_mayor': self.pentatonica_mayor,
                 'pentatonica_menor': self.pentatonica_menor
             }
+    class Acordes():
+        def __init__(self):
+            # distancias en semitonos
+            self.__dist = {
+                '1': 0, 'b2': 1, '2': 2, 'b3': 3, '3': 4, '4': 5, 'b5': 6, '5': 7, 
+                '5#': 8, '6': 9, 'b7': 10, '7': 11, '8': 12,'b9': 13,'9': 14,'9#': 15,
+                'b11': 16,'11': 17,'11#': 18,'12': 19,'b13': 20,'13': 21,'13#': 22,'14': 23
+            }
+            self.cromatica = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B' ]
+            self.equivalente = {'G#': 'Ab','A#': 'Bb','C#': 'Db','D#': 'Eb','F#': 'Gb'}
+        def formular_a_semitonos(self, lista_intervalos):
+            resultado = []
+            for i in lista_intervalos:
+                resultado.append(self.__dist[i])
+            return resultado
+        def semitonos_a_notas(self,tonica, lista_semitonos):
+            resultado = []
+            note_gen    = self.gen_prox_nota(tonica)
+            for i in lista_semitonos:
+                nota = next(note_gen)
+                for _ in range(i): nota = next(note_gen)
+                resultado.append(nota)
+                note_gen    = self.gen_prox_nota(tonica)
+            return resultado
+        def gen_prox_nota(self,inicial='C'):
+            nota = inicial if inicial not in self.equivalente else self.equivalente[inicial]
+            idx = self.cromatica.index(nota) 
+            while True:
+                yield self.cromatica[idx]
+                idx+=1; idx%=len(self.cromatica)
             
 ##################################################################################
 
