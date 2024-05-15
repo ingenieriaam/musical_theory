@@ -119,7 +119,6 @@ class Guitar():
                 nota = next(note_gen)
             elif form == 'tm':
                 nota = next(note_gen); nota = next(note_gen)
-            print(f'nota: {nota} | intervalo: {intervalo} | form: {form}')
             caracter = intervalo if indicacion == 'intervalo' else nota
             self.graficar_nota(nota,caracter=caracter,verbose=verbose)
 

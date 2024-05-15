@@ -6,3 +6,6 @@ Se integran facilidades para la visualización inmediata de información como:
 
 ### Ubicación de notas en el diapason
 ![notas_terminal](xtras/notas.png)
+
+### Diagrama de escalas
+![escalas_terminal](xtras/escalas.png)
