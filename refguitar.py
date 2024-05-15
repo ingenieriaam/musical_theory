@@ -221,4 +221,84 @@ class Guitar():
                 'pentatonica_menor': self.pentatonica_menor
             }
             
+##################################################################################
+
+##################################################################################
+
+from bokeh.plotting import figure, show,output_notebook
+from bokeh.models import FixedTicker
+
+class Diapason(Guitar):
+    def __init__(self,titulo=''):
+        super().__init__()
+        self.titulo = titulo
+        self.estructura = self.__estructura()
+    def __estructura(self):
+        """
+        Crea un gráfico con las cuerdas, los trastes y las marcas de referencia.
         
+        Returns:
+        - p (figure): Figura Bokeh con el diagrama de guitarra.
+        """
+        # Crear el gráfico
+        p = figure(plot_width=800, plot_height=200, x_range=(0, 25), y_range=(7, 0), toolbar_location="below")
+
+        # Deshabilitar el eje vertical
+        #p.yaxis.visible = False
+        # Definir los valores que deseas mostrar en la escala horizontal
+        xaxis_def = [3,5,7,9,12,15,17,19,21,24]
+        yaxis_def = [6,5,4,3,2,1]
+        # Configurar el ticker con los valores personalizados
+        p.xaxis.ticker = FixedTicker(ticks=xaxis_def)
+        p.yaxis.ticker = FixedTicker(ticks=yaxis_def)
+
+        # Dibujar las cuerdas
+        strings = ['e','B','G','D','A','E']
+        for i in range(6):
+            p.line(x=[1, 24], y=[i+1, i+1], line_width=2)
+            p.text(x=0.35, y=[i+1.25], text=[strings[i]], text_color="black", text_font_size="9pt")
+
+        # Dibujar los trastes
+        for i in range(1, 25):
+            if i in [1,24]:
+                p.line(x=[i, i], y=[1, 6], line_width=4)
+            else:
+                p.line(x=[i, i], y=[1, 6], line_width=1)
+
+        # Marcas de referencia (trastes 3, 5, 7, 9, 12, 15, 17, 19, 21, 24)
+        highlighted_notes = [3, 5, 7, 9, 15, 17, 19, 21]
+        adjustment = 0.5
+        highlighted_marks = [x + adjustment for x in highlighted_notes]
+        p.circle(x=highlighted_marks, y=[3.5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+        p.circle(x=12+0.5, y=[2]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+        p.circle(x=12+0.5, y=[5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+        
+        # Agregar un título al gráfico
+        p.title.text = self.titulo
+        p.title.align = "center"
+        p.title.text_color = "black"
+        p.title.text_font_size = "20px"
+
+        return p
+    
+    def graficar(self):
+        """
+        Representa el diagrama de diapasón de guitarra en la terminal.
+        """
+        output_notebook()
+        show(self.estructura)
+    def set_titulo(self,titulo):
+        """
+        Cambia el titulo del grafico
+        """
+        self.titulo = titulo
+                # Agregar un título al gráfico
+        self.estructura.title.text = self.titulo
+        self.estructura.title.align = "center"
+        self.estructura.title.text_color = "black"
+        self.estructura.title.text_font_size = "20px"
+        self.graficar()
+    
+    def limpiar_diapason(self):
+        self.estructura = self.__estructura()
+        self.limpiar_mastil_res()
