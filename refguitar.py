@@ -103,6 +103,7 @@ class Guitar():
         Returns:
         None
         """
+        self.limpiar_mastil_res()
         self.graficar_nota(tonica,caracter='T',verbose=verbose)
 
         esc_formula = self.formula.modo[tipo]
@@ -118,9 +119,10 @@ class Guitar():
                 nota = next(note_gen)
             elif form == 'tm':
                 nota = next(note_gen); nota = next(note_gen)
-
+            print(f'nota: {nota} | intervalo: {intervalo} | form: {form}')
             caracter = intervalo if indicacion == 'intervalo' else nota
             self.graficar_nota(nota,caracter=caracter,verbose=verbose)
+
         for key in self.mastil_res.keys():
             print(self.mastil_res[key])
 
@@ -176,8 +178,8 @@ class Guitar():
             self.mixolidio = ['t', 't', 'st', 't', 't', 'st', 't']
             self.eolico    = ['t', 'st', 't', 't', 'st', 't', 't']
             self.locrio    = ['st', 't', 't', 'st', 't', 't', 't']
-            self.pentatonica_menor = ['tm', 't', 't', 't', 'tm']
-            self.pentatonica_mayor = ['t', 't', 'tm', 't', 'tm']
+            self.pentatonica_menor = ['tm', 't', 't', 'tm', 't'] # 1, 3, 4, 5 y 7
+            self.pentatonica_mayor = ['t', 't', 'tm', 't', 'tm'] # 1, 2, 3, 5 y 6
             self.mayor = self.jonico
             self.menor = self.eolico
             self.modo  = {
