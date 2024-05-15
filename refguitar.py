@@ -44,6 +44,16 @@ class Guitar():
     # Metodos    
     ###############################################
     def encontrar_nota(self,nota, verbose = False):        
+        """
+        Encuentra la posición de una nota dada en cada cuerda del guitarra.
+        
+        Parámetros:
+        - nota (str): Nota a ser encontrada.
+        - verbose (bool): Si es True, imprime los resultados.
+
+        Returns:
+        - dict: Un diccionario con el string y las posiciones de la nota encontrada en ese string.
+        """
         resultado = {}
         for cuerda, notas in self.diapason.items():
             nota = nota if nota not in self.equivalente else self.equivalente[nota]
@@ -54,9 +64,16 @@ class Guitar():
                     print(f'La nota {nota} se encuentra en la cuerda {cuerda} en las posiciones {posicion}')
         return resultado
     
-    def graficar_nota_terminal(self, nota, caracter = 'X',verbose = False):
-        # cuerda: lista de espacios en el diapason
-        # self.mastil_medio contiene el espacio a marcar en el diagrama
+    def graficar_nota(self, nota, caracter = 'X',verbose = False):
+        """
+        Representa una nota dada en el diagrama de diapasón de guitarra en la terminal.
+        El diagrama resultante se guarda en el atributo 'mastil_res'.
+
+        Parámetros:
+        - nota (str): Nota de la que se generará el diagrama.
+        - caracter (str): Caracter de la representación de la nota del diagrama. El valor predeterminado es 'X'.
+        - verbose (bool): Si es True, imprime los resultados.
+        """
         resultado = self.encontrar_nota(nota, verbose)
 
         for cuerda, posiciones in resultado.items():
@@ -71,12 +88,22 @@ class Guitar():
 
             self.mastil_res[cuerda] = ''.join(diag_cuerda)
             print(cuerda,self.mastil_res[cuerda]) if verbose else None
-            # retornar en lugar de imprimir
-
         print('r',self.mastil_res['r']) if verbose else None
 
-    def graficar_escala(self, tonica, tipo,indicacion='intervalo', verbose = False):
-        self.graficar_nota_terminal(tonica,caracter='T',verbose=verbose)
+    def graficar_escala(self, tonica, tipo, indicacion='intervalo', verbose = False):
+        """
+        Representa la escala dada en el diagrama de diapasón de guitarra en la terminal.
+
+        Parametros:
+        - tonica (str): Tonica de la escala.
+        - tipo (str): Tipo de escala.
+        - indicacion (str): Indica qué se representa en el diagrama, intervalos o nombres de las notas ('intervalo' o 'nota').
+        - verbose (bool): If True, prints the results.
+
+        Returns:
+        None
+        """
+        self.graficar_nota(tonica,caracter='T',verbose=verbose)
 
         esc_formula = self.formula.modo[tipo]
         inte_gen    = self.gen_prox_dato(self.intervalo.modo[tipo])
@@ -86,25 +113,50 @@ class Guitar():
         
         for form in esc_formula:
             nota = next(note_gen); intervalo = next(inte_gen)
+
             if form == 't': 
                 nota = next(note_gen)
+            elif form == 'tm':
+                nota = next(note_gen); nota = next(note_gen)
+
             caracter = intervalo if indicacion == 'intervalo' else nota
-            self.graficar_nota_terminal(nota,caracter=caracter,verbose=verbose)
+            self.graficar_nota(nota,caracter=caracter,verbose=verbose)
         for key in self.mastil_res.keys():
             print(self.mastil_res[key])
 
-    def mastil_res_clean(self):
+    def limpiar_mastil_res(self):
+        """
+        Reseteo del atributo mastil_res a una copia del atributo mastil.
+        """
         self.mastil_res = self.mastil.copy()
 
     ###############################################
     # Generadores    
     ###############################################
     def gen_prox_dato(self,form):
+        """
+        Genera el siguiente elemento en la secuencia de elementos proporcionada.
+
+        Parameters:
+        - form (list): Secuencia de elementos.
+
+        Yields:
+        - Siguiente elemento de la secuencia.
+        """
         idx = 0
         while True:
             yield form[idx]
             idx+=1; idx%=len(form)
     def gen_prox_nota(self,inicial='C'):
+        """
+        Genera la siguiente nota en la escala cromática a partir de la nota inicial proporcionada.
+        
+        Parámetros:
+        - Inicial (str): la nota inicial para iniciar la generación desde. El valor predeterminado es 'C'.
+    
+        Yields:
+        - str: La siguiente nota en la escala cromática.
+        """
         nota = inicial if inicial not in self.equivalente else self.equivalente[inicial]
         idx = self.cromatica.index(nota) 
         while True:
@@ -116,6 +168,7 @@ class Guitar():
     ###############################################
     class Formulas():
         def __init__(self):
+            # t: tono, st: semi tono, tm: tono y medio
             self.jonico    = ['t', 't', 'st', 't', 't', 't', 'st']
             self.dorico    = ['t', 'st', 't', 't', 't', 'st', 't']
             self.frigio    = ['st', 't', 't', 't', 'st', 't', 't']
@@ -123,6 +176,8 @@ class Guitar():
             self.mixolidio = ['t', 't', 'st', 't', 't', 'st', 't']
             self.eolico    = ['t', 'st', 't', 't', 'st', 't', 't']
             self.locrio    = ['st', 't', 't', 'st', 't', 't', 't']
+            self.pentatonica_menor = ['tm', 't', 't', 't', 'tm']
+            self.pentatonica_mayor = ['t', 't', 'tm', 't', 'tm']
             self.mayor = self.jonico
             self.menor = self.eolico
             self.modo  = {
@@ -134,7 +189,9 @@ class Guitar():
                 'lidio': self.lidio,
                 'mixolidio': self.mixolidio,
                 'eolico': self.eolico,
-                'locrio': self.locrio
+                'locrio': self.locrio,
+                'pentatonica_mayor': self.pentatonica_mayor,
+                'pentatonica_menor': self.pentatonica_menor
             }
     class Intervalos():
         def __init__(self):
@@ -145,6 +202,8 @@ class Guitar():
             self.mixolidio = ['T', '2', '3', '4', '5', '6', 'b7']
             self.eolico    = ['T', '2', 'b3', '4', '5', 'b6', 'b7']
             self.locrio    = ['T', 'b2', 'b3', '4', 'b5', 'b6', 'b7']
+            self.pentatonica_menor = ['T', '3', '4', '5', '7']
+            self.pentatonica_mayor = ['T', '2', '3', '5', '6']
             self.mayor = self.jonico
             self.menor = self.eolico
             self.modo  = {
@@ -156,7 +215,9 @@ class Guitar():
                 'lidio': self.lidio,
                 'mixolidio': self.mixolidio,
                 'eolico': self.eolico,
-                'locrio': self.locrio
+                'locrio': self.locrio,
+                'pentatonica_mayor': self.pentatonica_mayor,
+                'pentatonica_menor': self.pentatonica_menor
             }
             
         
