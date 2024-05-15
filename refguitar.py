@@ -64,7 +64,7 @@ class Guitar():
                     print(f'La nota {nota} se encuentra en la cuerda {cuerda} en las posiciones {posicion}')
         return resultado
     
-    def graficar_nota(self, nota, caracter = 'X',verbose = False):
+    def graficar_nota_cmd(self, nota, caracter = 'X',verbose = False):
         """
         Representa una nota dada en el diagrama de diapasón de guitarra en la terminal.
         El diagrama resultante se guarda en el atributo 'mastil_res'.
@@ -90,7 +90,7 @@ class Guitar():
             print(cuerda,self.mastil_res[cuerda]) if verbose else None
         print('r',self.mastil_res['r']) if verbose else None
 
-    def graficar_escala(self, tonica, tipo, indicacion='intervalo', verbose = False):
+    def graficar_escala_cmd(self, tonica, tipo, indicacion='intervalo', verbose = False):
         """
         Representa la escala dada en el diagrama de diapasón de guitarra en la terminal.
 
@@ -104,7 +104,7 @@ class Guitar():
         None
         """
         self.limpiar_mastil_res()
-        self.graficar_nota(tonica,caracter='T',verbose=verbose)
+        self.graficar_nota_cmd(tonica,caracter='T',verbose=verbose)
 
         esc_formula = self.formula.modo[tipo]
         inte_gen    = self.gen_prox_dato(self.intervalo.modo[tipo])
@@ -120,7 +120,7 @@ class Guitar():
             elif form == 'tm':
                 nota = next(note_gen); nota = next(note_gen)
             caracter = intervalo if indicacion == 'intervalo' else nota
-            self.graficar_nota(nota,caracter=caracter,verbose=verbose)
+            self.graficar_nota_cmd(nota,caracter=caracter,verbose=verbose)
 
         for key in self.mastil_res.keys():
             print(self.mastil_res[key])
@@ -297,8 +297,43 @@ class Diapason(Guitar):
         self.estructura.title.align = "center"
         self.estructura.title.text_color = "black"
         self.estructura.title.text_font_size = "20px"
-        self.graficar()
     
     def limpiar_diapason(self):
         self.estructura = self.__estructura()
+        self.titulo = ''
+        self.set_titulo(self.titulo)
         self.limpiar_mastil_res()
+
+    def ubicar_nota(self, nota, caracter='X', verbose=False):
+        resultado = self.encontrar_nota(nota, verbose)
+        cuerda_a_num = {'e':1,'B':2,'G':3,'D':4,'A':5,'E':6}
+        for cuerda, posiciones in resultado.items():
+            num_cuerda = cuerda_a_num[cuerda] # cuerda es la posicion en Y, posiciones en X
+            for posicion in posiciones:
+                if caracter == 'X':
+                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=12, color='red', line_color='red', fill_alpha=0.5)
+                else:
+                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=18, color='red', line_color='red', fill_alpha=0.5)
+                    self.estructura.text(x=posicion+0.39 if len(caracter)<2 else posicion+0.27, 
+                                         y=[num_cuerda+0.35], text=[caracter], 
+                                         text_color="white", text_font_size="8pt")
+
+    def ubicar_escala(self, tonica, tipo, indicacion='intervalo', verbose=False):
+        self.limpiar_diapason()
+        self.ubicar_nota(tonica,caracter='T',verbose=verbose)
+
+        esc_formula = self.formula.modo[tipo]
+        inte_gen    = self.gen_prox_dato(self.intervalo.modo[tipo])
+        note_gen    = self.gen_prox_nota(tonica)
+
+        next(note_gen); next(inte_gen)
+        
+        for form in esc_formula:
+            nota = next(note_gen); intervalo = next(inte_gen)
+
+            if form == 't': 
+                nota = next(note_gen)
+            elif form == 'tm':
+                nota = next(note_gen); nota = next(note_gen)
+            caracter = intervalo if indicacion == 'intervalo' else nota
+            self.ubicar_nota(nota,caracter=caracter,verbose=verbose)
