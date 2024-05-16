@@ -224,17 +224,20 @@ class Guitar():
     class Acordes():
         def __init__(self):
             # distancias en semitonos
-            self.__dist = {
+            self.dist_ac = {
                 '1': 0, 'b2': 1, '2': 2, 'b3': 3, '3': 4, '4': 5, 'b5': 6, '5': 7, 
                 '5#': 8, '6': 9, 'b7': 10, '7': 11, '8': 12,'b9': 13,'9': 14,'9#': 15,
                 'b11': 16,'11': 17,'11#': 18,'12': 19,'b13': 20,'13': 21,'13#': 22,'14': 23
+            }
+            self.dist_color = {
+                '1': 'red', 'b3': 'orange', '3': 'orange',  'b5': 'yellow', '5': 'yellow', 'b7': 'cyan', '7':'cyan'
             }
             self.cromatica = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B' ]
             self.equivalente = {'G#': 'Ab','A#': 'Bb','C#': 'Db','D#': 'Eb','F#': 'Gb'}
         def formular_a_semitonos(self, lista_intervalos):
             resultado = []
             for i in lista_intervalos:
-                resultado.append(self.__dist[i])
+                resultado.append(self.dist_ac[i])
             return resultado
         def semitonos_a_notas(self,tonica, lista_semitonos):
             resultado = []
@@ -272,7 +275,7 @@ class Diapason(Guitar):
         - p (figure): Figura Bokeh con el diagrama de guitarra.
         """
         # Crear el gráfico
-        p = figure(plot_width=800, plot_height=200, x_range=(0, 25), y_range=(7, 0), toolbar_location="below")
+        p = figure(plot_width=800, plot_height=200, x_range=(0, 26), y_range=(7, 0), toolbar_location="below")
 
         # Deshabilitar el eje vertical
         #p.yaxis.visible = False
@@ -286,12 +289,12 @@ class Diapason(Guitar):
         # Dibujar las cuerdas
         strings = ['e','B','G','D','A','E']
         for i in range(6):
-            p.line(x=[1, 24], y=[i+1, i+1], line_width=2)
+            p.line(x=[1, 25], y=[i+1, i+1], line_width=2)
             p.text(x=0.35, y=[i+1.25], text=[strings[i]], text_color="black", text_font_size="9pt")
 
         # Dibujar los trastes
-        for i in range(1, 25):
-            if i in [1,24]:
+        for i in range(1, 26):
+            if i in [1,12,24]:
                 p.line(x=[i, i], y=[1, 6], line_width=4)
             else:
                 p.line(x=[i, i], y=[1, 6], line_width=1)
@@ -303,6 +306,8 @@ class Diapason(Guitar):
         p.circle(x=highlighted_marks, y=[3.5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         p.circle(x=12+0.5, y=[2]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         p.circle(x=12+0.5, y=[5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+        p.circle(x=24+0.5, y=[2]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+        p.circle(x=24+0.5, y=[5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         
         # Agregar un título al gráfico
         p.title.text = self.titulo
@@ -335,21 +340,22 @@ class Diapason(Guitar):
         self.set_titulo(self.titulo)
         self.limpiar_mastil_res()
 
-    def ubicar_nota(self, nota, caracter='X', verbose=False):
+    def ubicar_nota(self, nota, caracter='X', color='red',verbose=False):
         resultado = self.encontrar_nota(nota, verbose)
         cuerda_a_num = {'e':1,'B':2,'G':3,'D':4,'A':5,'E':6}
         for cuerda, posiciones in resultado.items():
             num_cuerda = cuerda_a_num[cuerda] # cuerda es la posicion en Y, posiciones en X
             for posicion in posiciones:
                 if caracter == 'X':
-                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=12, color='red', line_color='red', fill_alpha=0.5)
+                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=12, color=color, line_color=color, fill_alpha=0.5)
                 else:
-                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=18, color='red', line_color='red', fill_alpha=0.5)
-                    self.estructura.text(x=posicion+0.39 if len(caracter)<2 else posicion+0.27, 
-                                         y=[num_cuerda+0.35], text=[caracter], 
-                                         text_color="white", text_font_size="8pt")
+                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=18, color=color, line_color=color, fill_alpha=0.5)
 
-    def ubicar_escala(self, tonica, tipo, indicacion='intervalo', verbose=False):
+                    self.estructura.text(x=posicion+0.39 if len(caracter)<2 else posicion+0.27, 
+                                         y=[num_cuerda+0.35], text=[caracter], text_font_style="bold",
+                                         text_color='black', text_font_size="8pt")
+
+    def ubicar_escala(self, tonica, tipo, indicacion='intervalo', color='red', verbose=False):
         self.limpiar_diapason()
         self.ubicar_nota(tonica,caracter='T',verbose=verbose)
 
@@ -367,4 +373,13 @@ class Diapason(Guitar):
             elif form == 'tm':
                 nota = next(note_gen); nota = next(note_gen)
             caracter = intervalo if indicacion == 'intervalo' else nota
-            self.ubicar_nota(nota,caracter=caracter,verbose=verbose)
+            self.ubicar_nota(nota,caracter=caracter,color=color,verbose=verbose)
+    
+    def ubicar_acordes(self, lista_notas, intervalos=[], color='', indicacion='intervalo', verbose=False):
+        self.limpiar_diapason()
+        for idx in range(len(lista_notas)):
+            nota = lista_notas[idx]
+            caracter = intervalos[idx] if ( indicacion == 'intervalo' and len(intervalos)> 0 ) else nota
+            int_color = self.acorde.dist_color.get(caracter, 'teal') if color == '' else color
+            self.ubicar_nota(nota, caracter=caracter, color=int_color, verbose=verbose)
+
