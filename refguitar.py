@@ -1,4 +1,12 @@
 from collections import namedtuple
+import pandas as pd
+import sys, os
+from pathlib import Path
+this_script_path = os.path.abspath(__file__)
+current_dir      = os.path.dirname(this_script_path)
+data_path        = Path(current_dir, 'data')
+module_path  = Path(Path.home(), data_path)
+sys.path.append(module_path.__str__())
 
 class Guitar():
     def __init__(self):
@@ -221,6 +229,8 @@ class Guitar():
                 'pentatonica_mayor': self.pentatonica_mayor,
                 'pentatonica_menor': self.pentatonica_menor
             }
+    
+
     class Acordes():
         def __init__(self):
             # distancias en semitonos
@@ -234,6 +244,11 @@ class Guitar():
             }
             self.cromatica = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B' ]
             self.equivalente = {'G#': 'Ab','A#': 'Bb','C#': 'Db','D#': 'Eb','F#': 'Gb'}
+            self.info_ac = self.cargar_acordes()
+
+        def cargar_acordes(self):
+            ruta = Path(data_path, 'acordes_ref.csv')
+            return pd.read_csv(ruta)
         def formular_a_semitonos(self, lista_intervalos):
             resultado = []
             for i in lista_intervalos:

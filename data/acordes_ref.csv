@@ -1,0 +1,30 @@
+Acorde,Fórmula,Ejemplo en DO,Cifrado típico
+Acorde de quinta / Power Chord,1 – 5,C – G,C5
+Mayor,1 – 3 – 5,C – E – G,C
+Menor,1 – b3 – 5,C – Eb – G,"Cm, Cmin, C-"
+Aumentado,1 – 3 – #5,C – E – G#,"C+, Caug"
+Disminuido,1 – b3 – b5,C – Eb – Gb,"Cdim, C°"
+Cuarta suspendida,1 – 4 – 5,C – F – G,Csus4
+Segunda suspendida,1 – 2 – 5,C – D – G,Csus2
+Séptima,1 – 3 – 5 – b7,C – E – G – Bb,C7
+Séptima mayor,1 – 3 – 5 – 7,C – E – G – B,"C7M, Cmaj7, CΔ"
+Sexta,1 – 3 – 5 – 6,C – E – G – A,C6
+Menor sexta,1 – b3 – 5 – 6,C – Eb – G – A,Cm6
+Menor séptima,1 – b3 – 5 – b7,C – Eb – G – Bb,Cm7
+Menor séptima quinta bemol (semidisminuido),1 – b3 – b5 – b7,C – Eb – Gb – Bb,"Cm7(b5), C∅"
+Séptima disminuido,1 – b3 – b5 – 6,C – Eb – Gb – A,"Cdim7, C°, C°7"
+Novena añadida,1 – 3 – 5 – 9,C – E – G – D,Cadd9
+Menor con séptima mayor,1 – b3 – 5 – 7,C – Eb – G – B,Cm(7M)
+Séptima mayor con quinta aumentada,1 – 3 – 5# – 7,C – E – G# – B,"C7M(#5), C+(7M), Caug(7M)"
+Séptima con quinta aumentada,1 – 3 – 5# – b7,C – E – G# – Bb,"C7(#5), C+7, Caug7, C7(+5)"
+Séptima con quinta disminuida,1 – 3 – b5 – b7,C – E – Gb – Bb,C7(b5)
+Séptima mayor con novena,1 – 3 – 5 – 7 – 9,C – E – G – B – D,"C7M(9), Cmaj7(9), Cmaj9, C9M"
+Séptima con novena,1 – 3 – 5 – b7 – 9,C – E – G – Bb – D,"C7(9), C9"
+Menor séptima con novena,1 – b3 – 5 – b7 – 9,C – Eb – G – Bb – D,"Cm7(9), Cm9"
+Séptima con novena aumentada,1 – 3 – 5 – b7 – #9,C – E – G – Bb – D#,C7(#9)
+Séptima con novena menor,1 – 3 – 5 – b7 – b9,C – E – G – Bb – Db,C7(b9)
+Sexta con novena,1 – 3 – 5 – 6 – 9,C – E – G – A – D,"C6/9, C6(9), C6add9"
+Séptima mayor con novena y oncena,1 – 3 – 5 – 7 – 9 – 11,C – E – G – B – D – F,"Cmaj7(9)(11), Cmaj11"
+Séptima mayor con novena y oncena aumentada,1 – 3 – 5 – 7 – 9 – #11,C – E – G – B – D – F#,Cmaj7(9)(#11)
+Menor séptima con novena y oncena,1 – b3 – 5 – b7 – 9 – 11,C – Eb – G – Bb – D – F,"Cm7(9)(11), Cm11"
+Séptima con novena y oncena / Oncena de dominante,1 – 3 – 5 – b7 – 9 – 11,C – E – G – Bb – D – F,"C11, C7(9)(11)"
