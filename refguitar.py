@@ -248,7 +248,10 @@ class Guitar():
 
         def cargar_acordes(self):
             ruta = Path(data_path, 'acordes_ref.csv')
-            return pd.read_csv(ruta)
+            df = pd.read_csv(ruta)
+            # Eliminar la columna deseada (por ejemplo, 'columna_a_borrar')
+            df = df.drop('Ejemplo', axis=1)
+            return df
         def formular_a_semitonos(self, lista_intervalos):
             resultado = []
             for i in lista_intervalos:
@@ -269,6 +272,18 @@ class Guitar():
             while True:
                 yield self.cromatica[idx]
                 idx+=1; idx%=len(self.cromatica)
+        def sel_por_nombre(self, tonica, nombre):
+            if nombre.capitalize() not in self.info_ac['Nombre'].values:
+                print(f'El nombre {nombre} no se encontró en la lista de acordes cargada.')
+                print(self.info_ac['Nombre'].values)
+            else:
+                fila_seleccionada = self.info_ac.loc[self.info_ac['Nombre'] == nombre.capitalize()]
+                print(fila_seleccionada)
+                return fila_seleccionada['Formula'].values[0]
+        def sel_por_formula(self, acorde):
+            pass
+        def sel_por_cifrado(self, acorde):
+            pass
             
 ##################################################################################
 
