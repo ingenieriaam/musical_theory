@@ -1,5 +1,6 @@
 from collections import namedtuple
 import pandas as pd
+from unidecode import unidecode
 import sys, os
 from pathlib import Path
 this_script_path = os.path.abspath(__file__)
@@ -277,13 +278,51 @@ class Guitar():
                 print(f'El nombre {nombre} no se encontró en la lista de acordes cargada.')
                 print(self.info_ac['Nombre'].values)
             else:
-                fila_seleccionada = self.info_ac.loc[self.info_ac['Nombre'] == nombre.capitalize()]
+                fila_seleccionada = self.info_ac.loc[self.info_ac['Nombre'] == nombre.capitalize()].copy()
+                cifrado = fila_seleccionada['Cifrado'].values[0].replace('C',tonica)
+                fila_seleccionada.loc[:,'Cifrado'] = cifrado
+                formula = fila_seleccionada['Formula'].values[0].split(' - ')
+                st = self.formular_a_semitonos(formula)
+                notas = self.semitonos_a_notas(tonica,st)
                 print(fila_seleccionada)
-                return fila_seleccionada['Formula'].values[0]
-        def sel_por_formula(self, acorde):
-            pass
-        def sel_por_cifrado(self, acorde):
-            pass
+                return notas, formula, cifrado
+        def sel_por_formula(self, tonica, formula):
+            form = ' - '.join(formula)
+            if form.capitalize() not in self.info_ac['Formula'].values:
+                print(f'La formula {form} no se encontró en la lista de acordes cargada.')
+                print(self.info_ac['Formula'].values)
+            else:
+                fila_seleccionada = self.info_ac.loc[self.info_ac['Formula'] == form].copy()
+                nombre  = fila_seleccionada['Nombre'].values[0]
+                cifrado = fila_seleccionada['Cifrado'].values[0].replace('C',tonica)
+                fila_seleccionada.loc[:,'Cifrado'] = cifrado
+                st = self.formular_a_semitonos(formula)
+                notas = self.semitonos_a_notas(tonica,st)
+                print(fila_seleccionada)
+                return notas, nombre, cifrado
+        def sel_por_cifrado(self, cifrado):
+            tonica  = cifrado[0]
+            cifras  = self.info_ac['Cifrado'].copy()
+            cifras  = [cifra.replace('C', tonica) for cifra in cifras]
+
+            for cifra in cifras:
+                encontrado = cifrado.capitalize() in cifra
+                if encontrado: 
+                    fila_seleccionada = self.info_ac.loc[self.info_ac['Cifrado'] == cifra.replace(tonica,'C')].copy()
+                    fila_seleccionada['Cifrado'].values[0] = fila_seleccionada['Cifrado'].values[0].replace('C',tonica)
+                    break
+            #La función any() devuelve True si al menos un elemento de la lista cumple con la condición
+            #encontrado = any(cifrado.capitalize() in cif for cif in cifras)
+            if not encontrado:
+                print(f'El cifrado {cifrado} no se encontró en la lista de acordes cargada.')
+                print(cifras)
+            else:
+                print(fila_seleccionada)
+                nombre  = fila_seleccionada['Nombre'].values[0]
+                formula = fila_seleccionada['Formula'].values[0].split(' - ')
+                st = self.formular_a_semitonos(formula)
+                notas = self.semitonos_a_notas(tonica,st)
+                return notas, nombre, formula
             
 ##################################################################################
 
@@ -291,6 +330,8 @@ class Guitar():
 
 from bokeh.plotting import figure, show,output_notebook
 from bokeh.models import FixedTicker
+from bokeh.models import CustomJS
+from bokeh.models import TapTool, ColumnDataSource, Circle
 
 class Diapason(Guitar):
     def __init__(self,titulo=''):
@@ -305,7 +346,8 @@ class Diapason(Guitar):
         - p (figure): Figura Bokeh con el diagrama de guitarra.
         """
         # Crear el gráfico
-        p = figure(plot_width=800, plot_height=200, x_range=(0, 26), y_range=(7, 0), toolbar_location="below")
+        TOOLS = "box_select,lasso_select,help,pan,box_zoom,reset,save"
+        p = figure(tools=TOOLS, plot_width=800, plot_height=200, x_range=(0, 26), y_range=(7, 0), toolbar_location="below")
 
         # Deshabilitar el eje vertical
         #p.yaxis.visible = False
