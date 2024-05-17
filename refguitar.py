@@ -330,8 +330,11 @@ class Guitar():
 
 from bokeh.plotting import figure, show,output_notebook
 from bokeh.models import FixedTicker
+<<<<<<< Updated upstream
 from bokeh.models import CustomJS
 from bokeh.models import TapTool, ColumnDataSource, Circle
+=======
+>>>>>>> Stashed changes
 
 class Diapason(Guitar):
     def __init__(self,titulo=''):
@@ -346,8 +349,12 @@ class Diapason(Guitar):
         - p (figure): Figura Bokeh con el diagrama de guitarra.
         """
         # Crear el gráfico
+<<<<<<< Updated upstream
         TOOLS = "box_select,lasso_select,help,pan,box_zoom,reset,save"
         p = figure(tools=TOOLS, plot_width=800, plot_height=200, x_range=(0, 26), y_range=(7, 0), toolbar_location="below")
+=======
+        p = figure(plot_width=800, plot_height=200, x_range=(0, 25), y_range=(7, 0), toolbar_location="below")
+>>>>>>> Stashed changes
 
         # Deshabilitar el eje vertical
         #p.yaxis.visible = False
@@ -361,12 +368,21 @@ class Diapason(Guitar):
         # Dibujar las cuerdas
         strings = ['e','B','G','D','A','E']
         for i in range(6):
+<<<<<<< Updated upstream
             p.line(x=[1, 25], y=[i+1, i+1], line_width=2)
             p.text(x=0.35, y=[i+1.25], text=[strings[i]], text_color="black", text_font_size="9pt")
 
         # Dibujar los trastes
         for i in range(1, 26):
             if i in [1,12,24]:
+=======
+            p.line(x=[1, 24], y=[i+1, i+1], line_width=2)
+            p.text(x=0.35, y=[i+1.25], text=[strings[i]], text_color="black", text_font_size="9pt")
+
+        # Dibujar los trastes
+        for i in range(1, 25):
+            if i in [1,24]:
+>>>>>>> Stashed changes
                 p.line(x=[i, i], y=[1, 6], line_width=4)
             else:
                 p.line(x=[i, i], y=[1, 6], line_width=1)
@@ -378,8 +394,11 @@ class Diapason(Guitar):
         p.circle(x=highlighted_marks, y=[3.5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         p.circle(x=12+0.5, y=[2]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         p.circle(x=12+0.5, y=[5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+<<<<<<< Updated upstream
         p.circle(x=24+0.5, y=[2]*len(highlighted_marks), size=10, color='gray', line_color='gray')
         p.circle(x=24+0.5, y=[5]*len(highlighted_marks), size=10, color='gray', line_color='gray')
+=======
+>>>>>>> Stashed changes
         
         # Agregar un título al gráfico
         p.title.text = self.titulo
@@ -405,6 +424,7 @@ class Diapason(Guitar):
         self.estructura.title.align = "center"
         self.estructura.title.text_color = "black"
         self.estructura.title.text_font_size = "20px"
+<<<<<<< Updated upstream
     
     def limpiar_diapason(self):
         self.estructura = self.__estructura()
@@ -455,3 +475,10 @@ class Diapason(Guitar):
             int_color = self.acorde.dist_color.get(caracter, 'teal') if color == '' else color
             self.ubicar_nota(nota, caracter=caracter, color=int_color, verbose=verbose)
 
+=======
+        self.graficar()
+    
+    def limpiar_diapason(self):
+        self.estructura = self.__estructura()
+        self.limpiar_mastil_res()
+>>>>>>> Stashed changes
