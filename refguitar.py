@@ -330,6 +330,7 @@ class Guitar():
 
 from bokeh.plotting import figure, show,output_notebook
 from bokeh.models import FixedTicker
+import re
 
 class Diapason(Guitar):
     def __init__(self,titulo=''):
@@ -386,7 +387,6 @@ class Diapason(Guitar):
         p.title.text_font_size = "20px"
 
         return p
-    
     def graficar(self):
         """
         Representa el diagrama de diapasón de guitarra en la terminal.
@@ -403,29 +403,31 @@ class Diapason(Guitar):
         self.estructura.title.align = "center"
         self.estructura.title.text_color = "black"
         self.estructura.title.text_font_size = "20px"
-    
-    def limpiar_diapason(self):
+    def limpiar_diapason(self,limpiar_titulo=False):
         self.estructura = self.__estructura()
-        self.titulo = ''
-        self.set_titulo(self.titulo)
+        if limpiar_titulo:
+            self.titulo = ''
+            self.set_titulo(self.titulo)
         self.limpiar_mastil_res()
-
-    def ubicar_nota(self, nota, caracter='X', color='red',verbose=False):
+    def ubicar_nota(self, nota, caracter='X', color='red', en_cuerdas=['e','B','G','D','A','E'],verbose=False):
         resultado = self.encontrar_nota(nota, verbose)
         cuerda_a_num = {'e':1,'B':2,'G':3,'D':4,'A':5,'E':6}
+        pattern = r'^\["[A-Z]"(,"[A-Z]"){4}$'
         for cuerda, posiciones in resultado.items():
-            num_cuerda = cuerda_a_num[cuerda] # cuerda es la posicion en Y, posiciones en X
-            for posicion in posiciones:
-                if caracter == 'X':
-                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=12, color=color, line_color=color, fill_alpha=0.5)
-                else:
-                    self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=18, color=color, line_color=color, fill_alpha=0.5)
+            if cuerda in en_cuerdas:
+                num_cuerda = cuerda_a_num[cuerda] # cuerda es la posicion en Y, posiciones en X
+                for posicion in posiciones:
+                    if caracter == 'X':
+                        self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=12, color=color, line_color=color, fill_alpha=0.5)
+                    else:
+                        self.estructura.circle(x=posicion+0.5, y=[num_cuerda], size=18, color=color, line_color=color, fill_alpha=0.5)
 
-                    self.estructura.text(x=posicion+0.39 if len(caracter)<2 else posicion+0.27, 
-                                         y=[num_cuerda+0.35], text=[caracter], text_font_style="bold",
-                                         text_color='black', text_font_size="8pt")
-
-    def ubicar_escala(self, tonica, tipo, indicacion='intervalo', color='red', verbose=False):
+                        self.estructura.text(x=posicion+0.39 if len(caracter)<2 else posicion+0.27, 
+                                            y=[num_cuerda+0.35], text=[caracter], text_font_style="bold",
+                                            text_color='black', text_font_size="8pt")
+            elif re.match(pattern, str(en_cuerdas)):
+                raise Exception('en_cuerdas debe ser una lista de strings: ["e","B","G","D","A","E"]')
+    def ubicar_escala(self, tonica, tipo, indicacion='intervalo', en_cuerdas=['e','B','G','D','A','E'], color='red', verbose=False):
         self.limpiar_diapason()
         self.ubicar_nota(tonica,caracter='T',verbose=verbose)
 
@@ -443,13 +445,12 @@ class Diapason(Guitar):
             elif form == 'tm':
                 nota = next(note_gen); nota = next(note_gen)
             caracter = intervalo if indicacion == 'intervalo' else nota
-            self.ubicar_nota(nota,caracter=caracter,color=color,verbose=verbose)
-    
-    def ubicar_acordes(self, lista_notas, intervalos=[], color='', indicacion='intervalo', verbose=False):
+            self.ubicar_nota(nota,caracter=caracter,color=color,en_cuerdas=en_cuerdas,verbose=verbose)
+    def ubicar_acordes(self, lista_notas, intervalos=[], color='', indicacion='intervalo', en_cuerdas=['e','B','G','D','A','E'], verbose=False):
         self.limpiar_diapason()
         for idx in range(len(lista_notas)):
             nota = lista_notas[idx]
             caracter = intervalos[idx] if ( indicacion == 'intervalo' and len(intervalos)> 0 ) else nota
             int_color = self.acorde.dist_color.get(caracter, 'teal') if color == '' else color
-            self.ubicar_nota(nota, caracter=caracter, color=int_color, verbose=verbose)
+            self.ubicar_nota(nota, caracter=caracter, color=int_color, en_cuerdas=en_cuerdas, verbose=verbose)
 
